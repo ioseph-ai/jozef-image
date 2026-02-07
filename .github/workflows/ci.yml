@@ -45,20 +45,25 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Get OpenClaw version
+        id: openclaw_version
+        run: |
+          # Clone OpenClaw repo to get version
+          git clone --depth 1 https://github.com/openclaw/openclaw.git /tmp/openclaw
+          OPENCLAW_VERSION=$(jq -r '.version' /tmp/openclaw/package.json)
+          echo "version=${OPENCLAW_VERSION}" >> $GITHUB_OUTPUT
+          echo "OpenClaw version: ${OPENCLAW_VERSION}"
+
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
-            type=sha
-            # Latest tag for main branch
+            type=raw,value=${{ steps.openclaw_version.outputs.version }}-${{ github.ref_name }},enable=${{ startsWith(github.ref, 'refs/tags/v') }}
+            type=raw,value=${{ steps.openclaw_version.outputs.version }}-latest,enable=${{ github.ref == 'refs/heads/main' }}
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=sha
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -69,3 +74,5 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          build-args: |
+            OPENCLAW_VERSION=${{ steps.openclaw_version.outputs.version }}
