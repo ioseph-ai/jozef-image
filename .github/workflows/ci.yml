@@ -23,7 +23,7 @@ jobs:
           chmod +x tests/test.sh
           ./tests/test.sh
 
-  build-and-push:
+  build-and-test:
     needs: test
     runs-on: ubuntu-latest
     permissions:
@@ -65,14 +65,28 @@ jobs:
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
             type=sha
 
-      - name: Build and push Docker image
+      - name: Build image for testing
         uses: docker/build-push-action@v5
         with:
           context: .
-          push: ${{ github.event_name != 'pull_request' }}
+          load: true
+          tags: jozef-image:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Run integration tests
+        run: |
+          chmod +x tests/integration-test.sh
+          ./tests/integration-test.sh jozef-image:test
+
+      - name: Build and push Docker image
+        if: github.event_name != 'pull_request'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
-          cache-to: type=gha,mode=max
           build-args: |
             OPENCLAW_VERSION=${{ steps.openclaw_version.outputs.version }}
