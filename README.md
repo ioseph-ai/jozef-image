@@ -32,42 +32,45 @@ docker pull ghcr.io/ioseph-ai/jozef-image:1
 docker run --rm -it ghcr.io/ioseph-ai/jozef-image:latest bash
 ```
 
-## Versioning (Semver)
+## Versioning
 
-Ten projekt używa [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH).
+Wersja obrazu składa się z dwóch części: **WERSJA_OPENCLAW-SEMVER_REPO**.
+
+Przykład: `2026.2.6-3-v0.1.0` oznacza OpenClaw w wersji `2026.2.6-3` i obraz repo w wersji `v0.1.0`.
 
 ### Jak wydać nową wersję
 
 ```bash
-# Drobna zmiana (patch) - np. bugfix
-git tag v1.2.4
-git push origin v1.2.4
+# Drobna zmiana (patch) - np. bugfix w obrazie
+git tag v0.1.1
+git push origin v0.1.1
 
-# Nowa funkcjonalność (minor)
-git tag v1.3.0
-git push origin v1.3.0
+# Nowa funkcjonalność (minor) - np. nowe narzędzie
+git tag v0.2.0
+git push origin v0.2.0
 
 # Zmiana niekompatybilna (major)
-git tag v2.0.0
-git push origin v2.0.0
+git tag v1.0.0
+git push origin v1.0.0
 ```
 
 ### Automatyczne tagi Docker
 
-Po pushu tagu `v1.2.3`, CI utworzy obrazy z tagami:
+Po pushu tagu `v0.1.0`, CI utworzy obrazy z tagami:
 
-| Git Tag | Tagi Docker |
-|---------|-------------|
-| `v1.2.3` | `1.2.3`, `1.2`, `1`, `latest` |
-| `v1.2.4` | `1.2.4`, `1.2`, `1`, `latest` |
-| `v1.3.0` | `1.3.0`, `1.3`, `1`, `latest` |
-| `v2.0.0` | `2.0.0`, `2.0`, `2`, `latest` |
+| Git Tag | Tagi Docker (przykład) | Opis |
+|---------|------------------------|------|
+| `v0.1.0` | `2026.2.6-3-v0.1.0` | Pełna wersja |
+| `main` | `2026.2.6-3-latest`, `latest` | Najnowsza z main |
+| - | `<sha>` | Commit SHA |
 
-Dzięki temu możesz:
-- Przypiąć do konkretnej wersji: `:1.2.3`
-- Automatycznie aktualizować patch: `:1.2` (dostaniesz 1.2.4, 1.2.5 itd.)
-- Automatycznie aktualizować minor: `:1` (dostaniesz 1.3.0, 1.4.0 itd.)
-- Zawsze mieć najnowsze: `:latest`
+Dzięki temu wiesz dokładnie jaka wersja OpenClaw jest w środku.
+
+### Sprawdź wersję OpenClaw w obrazie
+
+```bash
+docker run --rm ghcr.io/ioseph-ai/jozef-image:latest node openclaw.mjs --version
+```
 
 ## Build Locally
 
