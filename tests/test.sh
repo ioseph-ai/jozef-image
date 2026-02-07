@@ -13,7 +13,7 @@ echo "PASS: Dockerfile exists"
 
 # Test 2: Check required tools are mentioned in Dockerfile
 echo "Test 2: Checking required tools in Dockerfile..."
-for tool in vim python3 pip node bun curl git; do
+for tool in vim python3 pip node curl git ssh; do
     if grep -iq "$tool" Dockerfile; then
         echo "  FOUND: $tool"
     else
@@ -45,6 +45,40 @@ if grep -q $'\t' .github/workflows/ci.yml; then
     exit 1
 fi
 echo "PASS: YAML syntax OK"
+
+# Test 5: Check Dockerfile has multi-stage build
+echo "Test 5: Checking multi-stage build..."
+if ! grep -q "AS builder" Dockerfile; then
+    echo "FAIL: No multi-stage build (AS builder) found"
+    exit 1
+fi
+if ! grep -q "COPY --from=builder" Dockerfile; then
+    echo "FAIL: No COPY --from=builder found"
+    exit 1
+fi
+echo "PASS: Multi-stage build configured"
+
+# Test 6: Check OpenClaw is installed
+echo "Test 6: Checking OpenClaw installation..."
+if ! grep -q "openclaw.mjs" Dockerfile; then
+    echo "FAIL: openclaw.mjs not referenced in Dockerfile"
+    exit 1
+fi
+if ! grep -q "openclaw/openclaw" Dockerfile; then
+    echo "FAIL: OpenClaw repo not cloned in Dockerfile"
+    exit 1
+fi
+echo "PASS: OpenClaw installation configured"
+
+# Test 7: Check for security best practices
+echo "Test 7: Checking security best practices..."
+if ! grep -q "USER node" Dockerfile; then
+    echo "WARNING: No USER node found (running as root)"
+fi
+if ! grep -q "apt-get clean" Dockerfile; then
+    echo "WARNING: No apt-get clean found"
+fi
+echo "PASS: Security check complete"
 
 echo ""
 echo "=== All tests passed ==="
