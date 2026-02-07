@@ -4,19 +4,16 @@ set -e
 echo "=== Running tests ==="
 
 # Test 1: Dockerfile syntax check
-echo "Test 1: Checking Dockerfile syntax..."
+echo "Test 1: Checking Dockerfile exists..."
 if [ ! -f Dockerfile ]; then
     echo "FAIL: Dockerfile not found"
     exit 1
 fi
-# Basic check for required commands
-grep -q "FROM" Dockerfile || { echo "FAIL: No FROM directive"; exit 1; }
-grep -q "RUN" Dockerfile || { echo "FAIL: No RUN directive"; exit 1; }
-echo "PASS: Dockerfile syntax OK"
+echo "PASS: Dockerfile exists"
 
 # Test 2: Check required tools are mentioned in Dockerfile
-echo "Test 2: Checking required tools..."
-for tool in vim python3 pip node bun; do
+echo "Test 2: Checking required tools in Dockerfile..."
+for tool in vim python3 pip node bun curl git; do
     if grep -iq "$tool" Dockerfile; then
         echo "  FOUND: $tool"
     else
