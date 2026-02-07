@@ -56,12 +56,11 @@ WORKDIR /app
 COPY --from=builder /build/package.json /build/pnpm-lock.yaml /build/pnpm-workspace.yaml ./
 COPY --from=builder /build/node_modules ./node_modules
 COPY --from=builder /build/openclaw.mjs ./
-COPY --from=builder /build/gateway ./gateway
-COPY --from=builder /build/agents ./agents
+COPY --from=builder /build/dist ./dist
 COPY --from=builder /build/skills ./skills
-COPY --from=builder /build/ui ./ui
-COPY --from=builder /build/patches ./patches
-COPY --from=builder /build/scripts ./scripts
+COPY --from=builder /build/assets ./assets
+COPY --from=builder /build/docs ./docs
+COPY --from=builder /build/extensions ./extensions
 
 # Create workspace directory
 RUN mkdir -p /home/node/.openclaw/workspace && \
