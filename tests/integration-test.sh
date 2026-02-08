@@ -25,8 +25,8 @@ echo "PASS: Image exists"
 
 # Test 2: Check OpenClaw version
 echo "Test 2: Checking OpenClaw version..."
-OPENCLAW_VERSION=$(docker run --rm "$IMAGE_TAG" node openclaw.mjs --version 2>&1 || true)
-if echo "$OPENCLAW_VERSION" | grep -q "OpenClaw"; then
+OPENCLAW_VERSION=$(docker run --rm "$IMAGE_TAG" node openclaw.mjs --version 2>&1 )
+if echo "$OPENCLAW_VERSION" | grep -Eq "[0-9]+.[0-9]+"; then
     echo "  OpenClaw: $OPENCLAW_VERSION"
     echo "PASS: OpenClaw responds"
 else
