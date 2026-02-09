@@ -76,7 +76,7 @@ RUN if [ -n "$EXTRA_APT_PACKAGES" ]; then \
     fi
 
 # Install kubectl
-RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.28.0/bin/linux/amd64/kubectl && chmod +x kubectl && mv kubectl /usr/local/bin
+RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.31.0/bin/linux/amd64/kubectl && chmod +x kubectl && mv kubectl /usr/local/bin
 
 # Security: Run as non-root
 USER node
