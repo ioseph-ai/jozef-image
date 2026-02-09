@@ -75,6 +75,9 @@ RUN if [ -n "$EXTRA_APT_PACKAGES" ]; then \
       rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*; \
     fi
 
+# Install kubectl
+RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.28.0/bin/linux/amd64/kubectl && chmod +x kubectl && mv kubectl /usr/local/bin
+
 # Security: Run as non-root
 USER node
 
@@ -83,4 +86,3 @@ ENV NODE_ENV=production
 ENV OPENCLAW_PREFER_PNPM=1
 
 # Default: start gateway
-CMD ["node", "openclaw.mjs", "gateway", "--allow-unconfigured"]
